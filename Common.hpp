@@ -20,17 +20,17 @@ struct MeshSettings
     static constexpr int TilesPerChunk =
         1; // number of rows and columns of tiles per ADT MCNK chunk
     static constexpr int TileVoxelSize =
-        112; // number of voxel rows and columns per tile
+        56; // number of voxel rows and columns per tile
 
-    static constexpr float CellHeight = 0.25f;
+    static constexpr float CellHeight = 0.5f;
     static constexpr float WalkableHeight =
         1.6f; // agent height in world units (yards)
     static constexpr float WalkableRadius =
-        0.3f; // narrowest allowable hallway in world units (yards)
+        2.5f; // narrowest allowable hallway in world units (yards)
     static constexpr float WalkableSlope =
         50.f; // maximum walkable slope, in degrees
     static constexpr float WalkableClimb =
-        1.f; // maximum 'step' height for which slope is ignored (yards)
+        0.9f; // maximum 'step' height for which slope is ignored (yards)
     static constexpr float DetailSampleDistance =
         3.f; // heightfield detail mesh sample distance (yards)
     static constexpr float DetailSampleMaxError =
@@ -39,10 +39,10 @@ struct MeshSettings
 
     // NOTE: If Recast warns "Walk towards polygon center failed to reach
     // center", try lowering this value
-    static constexpr float MaxSimplificationError = 0.5f;
+    static constexpr float MaxSimplificationError = 0.1f;
 
-    static constexpr int MinRegionSize = 1600;
-    static constexpr int MergeRegionSize = 400;
+    static constexpr int MinRegionSize = 400;
+    static constexpr int MergeRegionSize = 100;
     static constexpr int VerticesPerPolygon = 6;
 
     static constexpr std::uint32_t FileSignature = 'NNAV';
@@ -90,7 +90,8 @@ struct MeshSettings
     static_assert(CellSize > 0.f, "CellSize must be positive");
 };
 
-enum class Result {
+enum class Result
+{
     SUCCESS = 0,
     UNRECOGNIZED_EXTENSION = 1,
     NO_MOGP_CHUNK = 2,
