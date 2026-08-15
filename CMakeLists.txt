@@ -46,6 +46,7 @@ add_definitions(-DDT_POLYREF64)
 set(RECASTNAVIGATION_DEMO OFF CACHE BOOL "Build demo")
 set(RECASTNAVIGATION_TESTS OFF CACHE BOOL "Build tests")
 set(RECASTNAVIGATION_EXAMPLES OFF CACHE BOOL "Build examples")
+set(RECASTNAVIGATION_DT_VIRTUAL_QUERYFILTER ON CACHE BOOL "Use dynamic dispatch for dtQueryFilter in Detour to allow for custom filters" FORCE)
 add_subdirectory(recastnavigation EXCLUDE_FROM_ALL)
 
 if (NAMIGATOR_BUILD_C_API)
