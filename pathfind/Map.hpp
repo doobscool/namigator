@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "BVH.hpp"
 #include "Common.hpp"
@@ -138,6 +138,9 @@ public:
     bool FindPath(const math::Vertex& start, const math::Vertex& end,
                   std::vector<math::Vertex>& output,
                   bool allowPartial = false) const;
+    bool FindPath(const math::Vertex& start, const math::Vertex& end,
+                  std::vector<math::Vertex>& output, bool allowPartial,
+                  const dtQueryFilter* customFilter) const;
 
     // for finding height(s) at a given (x, y), there are two scenarios:
     // 1: we want to find exactly one z for a given path which has this (x, y)

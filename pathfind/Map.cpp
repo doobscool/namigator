@@ -1,4 +1,4 @@
-#include "Map.hpp"
+﻿#include "Map.hpp"
 
 #include "Common.hpp"
 #include "Tile.hpp"
@@ -533,37 +533,41 @@ std::shared_ptr<Model> Map::GetOrLoadModelByDisplayId(unsigned int displayId)
 bool Map::FindPath(const math::Vertex& start, const math::Vertex& end,
                    std::vector<math::Vertex>& output, bool allowPartial) const
 {
+    return FindPath(start, end, output, allowPartial, nullptr);
+}
+
+bool Map::FindPath(const math::Vertex& start, const math::Vertex& end,
+                   std::vector<math::Vertex>& output, bool allowPartial,
+                   const dtQueryFilter* customFilter) const
+{
+    const dtQueryFilter* filter = customFilter ? customFilter : &m_queryFilter;
+
     constexpr float extents[] = {5.f, 5.f, 5.f};
 
-    float recastStart[3];
-    float recastEnd[3];
-
+    float recastStart[3], recastEnd[3];
     math::Convert::VertexToRecast(start, recastStart);
     math::Convert::VertexToRecast(end, recastEnd);
 
     dtPolyRef startPolyRef, endPolyRef;
-    if (!(m_navQuery.findNearestPoly(recastStart, extents, &m_queryFilter,
+    if (!(m_navQuery.findNearestPoly(recastStart, extents, filter,
                                      &startPolyRef, nullptr) &
           DT_SUCCESS))
         return false;
-
     if (!startPolyRef)
         return false;
 
-    if (!(m_navQuery.findNearestPoly(recastEnd, extents, &m_queryFilter,
-                                     &endPolyRef, nullptr) &
+    if (!(m_navQuery.findNearestPoly(recastEnd, extents, filter, &endPolyRef,
+                                     nullptr) &
           DT_SUCCESS))
         return false;
-
     if (!endPolyRef)
         return false;
 
     dtPolyRef polyRefBuffer[MaxPathHops];
-
     int pathLength;
-    auto const findPathResult = m_navQuery.findPath(
-        startPolyRef, endPolyRef, recastStart, recastEnd, &m_queryFilter,
-        polyRefBuffer, &pathLength, MaxPathHops);
+    auto const findPathResult =
+        m_navQuery.findPath(startPolyRef, endPolyRef, recastStart, recastEnd,
+                            filter, polyRefBuffer, &pathLength, MaxPathHops);
     if (!(findPathResult & DT_SUCCESS) ||
         (!allowPartial && !!(findPathResult & DT_PARTIAL_RESULT)))
         return false;
@@ -577,8 +581,7 @@ bool Map::FindPath(const math::Vertex& start, const math::Vertex& end,
         return false;
 
     output.resize(pathLength);
-
-    for (auto i = 0; i < pathLength; ++i)
+    for (int i = 0; i < pathLength; ++i)
         math::Convert::VertexToWow(&pathBuffer[i * 3], output[i]);
 
     return true;
