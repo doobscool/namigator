@@ -22,27 +22,27 @@ struct MeshSettings
     static constexpr int TileVoxelSize =
         56; // number of voxel rows and columns per tile
 
-    static constexpr float CellHeight = 0.5f;
+    static constexpr float CellHeight = 0.2f;
     static constexpr float WalkableHeight =
-        1.6f; // agent height in world units (yards)
+        1.5f; // agent height in world units (yards)
     static constexpr float WalkableRadius =
-        2.5f; // narrowest allowable hallway in world units (yards)
+        0.6f; // narrowest allowable hallway in world units (yards)
     static constexpr float WalkableSlope =
-        50.f; // maximum walkable slope, in degrees
+        30.f; // maximum walkable slope, in degrees
     static constexpr float WalkableClimb =
-        0.9f; // maximum 'step' height for which slope is ignored (yards)
+        1.f; // maximum 'step' height for which slope is ignored (yards)
     static constexpr float DetailSampleDistance =
-        3.f; // heightfield detail mesh sample distance (yards)
+        2.f; // heightfield detail mesh sample distance (yards)
     static constexpr float DetailSampleMaxError =
-        0.25f; // maximum distance detail mesh surface should deviate from
+        0.15f; // maximum distance detail mesh surface should deviate from
                // heightfield (yards)
 
     // NOTE: If Recast warns "Walk towards polygon center failed to reach
     // center", try lowering this value
-    static constexpr float MaxSimplificationError = 0.1f;
+    static constexpr float MaxSimplificationError = 0.05f;
 
-    static constexpr int MinRegionSize = 400;
-    static constexpr int MergeRegionSize = 100;
+    static constexpr int MinRegionSize = 200;
+    static constexpr int MergeRegionSize = 50;
     static constexpr int VerticesPerPolygon = 6;
 
     static constexpr std::uint32_t FileSignature = 'NNAV';
