@@ -816,6 +816,36 @@ bool Map::FindRandomPointAroundCircle(const math::Vertex& centerPosition,
     return true;
 }
 
+bool Map::MoveAlongSurface(const math::Vertex& start, const math::Vertex& end,
+                           math::Vertex& result) const
+{
+    float recastStart[3], recastEnd[3];
+    math::Convert::VertexToRecast(start, recastStart);
+    math::Convert::VertexToRecast(end, recastEnd);
+
+    constexpr float extents[] = {1.f, 1.f, 1.f};
+
+    dtPolyRef startRef;
+    if (m_navQuery.findNearestPoly(recastStart, extents, &m_queryFilter,
+                                   &startRef, nullptr) != DT_SUCCESS)
+        return false;
+    if (!startRef)
+        return false;
+
+    float resultPos[3];
+    constexpr int MaxVisited = 16;
+    dtPolyRef visited[MaxVisited];
+    int visitedCount = 0;
+
+    if (m_navQuery.moveAlongSurface(startRef, recastStart, recastEnd,
+                                    &m_queryFilter, resultPos, visited,
+                                    &visitedCount, MaxVisited) != DT_SUCCESS)
+        return false;
+
+    math::Convert::VertexToWow(resultPos, result);
+    return true;
+}
+
 
 bool Map::FindHeight(const math::Vertex& source, float x, float y, float& z) const
 {

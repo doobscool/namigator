@@ -363,4 +363,37 @@ PathfindResultType pathfind_find_random_point_around_circle(pathfind::Map* const
     }
 }
 
+PathfindResultType pathfind_move_along_surface(pathfind::Map* const map,
+                                               float start_x, float start_y,
+                                               float start_z, float end_x,
+                                               float end_y, float end_z,
+                                               Vertex* const out_vertex)
+{
+    try
+    {
+        const math::Vertex start {start_x, start_y, start_z};
+        const math::Vertex end {end_x, end_y, end_z};
+        math::Vertex result {};
+
+        if (!map->MoveAlongSurface(start, end, result))
+        {
+            return static_cast<PathfindResultType>(Result::UNKNOWN_PATH);
+        }
+
+        out_vertex->x = result.X;
+        out_vertex->y = result.Y;
+        out_vertex->z = result.Z;
+
+        return static_cast<PathfindResultType>(Result::SUCCESS);
+    }
+    catch (utility::exception& e)
+    {
+        return static_cast<PathfindResultType>(e.ResultCode());
+    }
+    catch (...)
+    {
+        return static_cast<PathfindResultType>(Result::UNKNOWN_EXCEPTION);
+    }
+}
+
 } // extern "C"

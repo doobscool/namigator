@@ -138,5 +138,16 @@ PathfindResultType pathfind_find_random_point_around_circle(pathfind::Map* const
                                                             float* const random_y,
                                                             float* const random_z);
 
+/*
+    Детерминированный шаг вдоль поверхности навмеша от (start) к (end).
+    В отличие от pathfind_find_random_point_around_circle, для одних и тех
+    же входных данных всегда возвращает одну и ту же точку.
+*/
+PathfindResultType pathfind_move_along_surface(pathfind::Map* const map,
+                                               float start_x, float start_y,
+                                               float start_z, float end_x,
+                                               float end_y, float end_z,
+                                               Vertex* const out_vertex);
+
 } // extern "C"
 

@@ -168,7 +168,13 @@ public:
     bool FindRandomPointAroundCircle(const math::Vertex& centerPosition,
                                      float radius,
                                      math::Vertex& randomPoint) const;
-
+    // Детерминированный "скользящий" шаг по навмешу от start в направлении
+    // end - в отличие от FindRandomPointAroundCircle, всегда возвращает
+    // одну и ту же точку для одних и тех же входных данных (при условии,
+    // что навмеш не поменялся). Используется там, где нужен предсказуемый
+    // обходной шаг вдоль препятствия, а не случайная выборка.
+    bool MoveAlongSurface(const math::Vertex& start, const math::Vertex& end,
+                          math::Vertex& result) const;
     bool FindPointInBetweenVectors(const math::Vertex& start,
                                    const math::Vertex& end,
                                    const float distance,
