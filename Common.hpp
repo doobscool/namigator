@@ -29,8 +29,14 @@ struct MeshSettings
         0.6f; // narrowest allowable hallway in world units (yards)
     static constexpr float WalkableSlope =
         50.f; // maximum walkable slope, in degrees
+    // Recast считает ступень в вокселях: int(WalkableClimb / CellHeight).
+    // 0.5 при высоте ячейки 0.2 давало 2 вокселя = 0.4 ярда, и навмеш
+    // 27.09 потерял лестницы и пандусы: к распорядителю полётов Штормграда
+    // пути не стало вовсе, из каналов - только через 800 ярдов, из ямы арены
+    // Гурубаши и к Зул'Гурубу от кладбища - никак. 1.0 = 5 вокселей: на
+    // пересобранных тайлах эти пути снова есть (bot.exe --nav-pathtest).
     static constexpr float WalkableClimb =
-        0.5f; // maximum 'step' height for which slope is ignored (yards)
+        1.0f; // maximum 'step' height for which slope is ignored (yards)
     static constexpr float DetailSampleDistance =
         2.f; // heightfield detail mesh sample distance (yards)
     static constexpr float DetailSampleMaxError =
@@ -87,6 +93,10 @@ struct MeshSettings
                   "VoxelWalkableHeight must be a non-negativeinteger");
     static_assert(VoxelWalkableClimb >= 0,
                   "VoxelWalkableClimb must be non-negative integer");
+    // Ступень должна делиться на высоту ячейки без остатка, иначе Recast
+    // молча округлит вниз (0.5 / 0.2 -> 0.4 ярда).
+    static_assert(VoxelWalkableClimb * CellHeight > WalkableClimb - 0.01f,
+                  "WalkableClimb must be a multiple of CellHeight");
     static_assert(CellSize > 0.f, "CellSize must be positive");
 };
 

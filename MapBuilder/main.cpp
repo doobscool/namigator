@@ -88,12 +88,12 @@ int main(int argc, char* argv[])
                 threads = std::stoi(argv[++i]);
             else if (arg == "-l" || arg == "--loglevel")
                 logLevel = std::stoi(argv[++i]);
-#ifdef _DEBUG
-            else if (arg == "-x" || arg == "--adtX")
+            // Одна ADT (-x/-y) - и в Release: так быстро проверяется правка
+            // настроек на паре тайлов (30 секунд вместо сборки континента).
+            else if (arg == "-x" || arg == "--adtx")
                 adtX = std::stoi(argv[++i]);
-            else if (arg == "-y" || arg == "--adtY")
+            else if (arg == "-y" || arg == "--adty")
                 adtY = std::stoi(argv[++i]);
-#endif
             else
                 throw std::invalid_argument("Unrecognized argument " + arg);
         }
