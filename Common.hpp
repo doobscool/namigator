@@ -28,7 +28,7 @@ struct MeshSettings
     static constexpr float WalkableRadius =
         0.6f; // narrowest allowable hallway in world units (yards)
     static constexpr float WalkableSlope =
-        50.f; // maximum walkable slope, in degrees
+        35.f; // maximum walkable slope, in degrees
     // Recast считает ступень в вокселях: int(WalkableClimb / CellHeight).
     // 0.5 при высоте ячейки 0.2 давало 2 вокселя = 0.4 ярда, и навмеш
     // 27.09 потерял лестницы и пандусы: к распорядителю полётов Штормграда
