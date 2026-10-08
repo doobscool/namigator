@@ -464,11 +464,15 @@ MeshBuilder::MeshBuilder(const std::filesystem::path& outputPath,
 
     if (auto const wmo = m_map->GetGlobalWmoInstance())
     {
+        // BuildAndSerializeWMOTile steps tileX along wow Y (west) and tileY
+        // along wow X (north), as does the runtime (pathfind/Map.cpp origin).
+        // Sizing tileX by the X extent left the far end of long WMO maps
+        // without tiles: DeeprunTram had no mesh at the Ironforge station.
         auto const tileWidth = static_cast<int>(
-            ::ceilf((wmo->Bounds.MaxCorner.X - wmo->Bounds.MinCorner.X) /
+            ::ceilf((wmo->Bounds.MaxCorner.Y - wmo->Bounds.MinCorner.Y) /
                     MeshSettings::TileSize));
         auto const tileHeight = static_cast<int>(
-            ::ceilf((wmo->Bounds.MaxCorner.Y - wmo->Bounds.MinCorner.Y) /
+            ::ceilf((wmo->Bounds.MaxCorner.X - wmo->Bounds.MinCorner.X) /
                     MeshSettings::TileSize));
 
         m_globalWMO = std::make_unique<meshfiles::GlobalWMO>();
