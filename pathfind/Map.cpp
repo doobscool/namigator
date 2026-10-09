@@ -279,7 +279,10 @@ Map::Map(const std::filesystem::path& dataPath, const std::string& mapName)
         }
     }
 
-    if (m_navQuery.init(&m_navMesh, 65535) != DT_SUCCESS)
+    // 65535 nodes ran out on 3000+ yd walks (09.10: Ironforge -> Arathi,
+    // 7.6k yd): Detour returned the explored node closest to the goal, a
+    // dead end 300 yd away. Needs the 32-bit dtNodeIndex (DetourNode.h).
+    if (m_navQuery.init(&m_navMesh, 1048575) != DT_SUCCESS)
         THROW(Result::DTNAVMESHQUERY_INIT_FAILED);
 }
 
