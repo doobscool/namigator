@@ -48,6 +48,10 @@ set(RECASTNAVIGATION_TESTS OFF CACHE BOOL "Build tests")
 set(RECASTNAVIGATION_EXAMPLES OFF CACHE BOOL "Build examples")
 set(RECASTNAVIGATION_DT_VIRTUAL_QUERYFILTER ON CACHE BOOL "Use dynamic dispatch for dtQueryFilter in Detour to allow for custom filters" FORCE)
 add_subdirectory(recastnavigation EXCLUDE_FROM_ALL)
+# Detour with a 32-bit dtNodeIndex (detour_override/DetourNode.h): the stock
+# 16-bit index caps the query node pool at 65535, which long walks exhaust
+# (pathfind/Map.cpp). Found before recastnavigation/Detour/Include.
+target_include_directories(Detour BEFORE PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/detour_override")
 
 if (NAMIGATOR_BUILD_C_API)
     install(TARGETS Detour Recast ARCHIVE DESTINATION lib)
