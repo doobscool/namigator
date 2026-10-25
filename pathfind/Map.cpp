@@ -986,14 +986,59 @@ bool Map::LineOfSight(const math::Vertex& start, const math::Vertex& stop, bool 
     return !RayCast(ray, doodads);
 }
 
+bool Map::LineOfSightFullScan(const math::Vertex& start,
+                              const math::Vertex& stop, bool doodads) const
+{
+    math::Ray ray {start, stop};
+    std::vector<const Tile*> tiles;
+    for (auto const& tile : m_tiles)
+        if (ray.IntersectBoundingBox(tile.second->m_bounds))
+            tiles.push_back(tile.second.get());
+    return !RayCast(ray, tiles, doodads);
+}
+
 bool Map::RayCast(math::Ray& ray, bool doodads) const
 {
     std::vector<const Tile*> tiles;
 
-    // find affected tiles
-    for (auto const& tile : m_tiles)
-        if (ray.IntersectBoundingBox(tile.second->m_bounds))
-            tiles.push_back(tile.second.get());
+    // Only the tiles under the ray's XY box (plus one tile of margin), looked
+    // up by tile index. Testing the bounds of every loaded tile (tens of
+    // thousands with all ADTs loaded) cost ~25 ms per LineOfSight, and the bot
+    // fleet issues 500-900 of them a minute through one nav service.
+    auto const tileOf = [this](float x, float y, int& tileX, int& tileY) {
+        if (HasADTs())
+            math::Convert::WorldToTile({x, y, 0.f}, tileX, tileY);
+        else
+        {
+            tileX = static_cast<int>((m_globalWmoOriginY - y) / MeshSettings::TileSize);
+            tileY = static_cast<int>((m_globalWmoOriginX - x) / MeshSettings::TileSize);
+        }
+    };
+    auto const& start = ray.GetStartPoint();
+    auto const& end = ray.GetEndPoint();
+    int sx, sy, ex, ey;
+    tileOf(start.X, start.Y, sx, sy);
+    tileOf(end.X, end.Y, ex, ey);
+    auto const minX = (std::min)(sx, ex) - 1, maxX = (std::max)(sx, ex) + 1;
+    auto const minY = (std::min)(sy, ey) - 1, maxY = (std::max)(sy, ey) + 1;
+    auto const cells = static_cast<size_t>(maxX - minX + 1) * static_cast<size_t>(maxY - minY + 1);
+
+    if (cells < m_tiles.size())
+    {
+        for (auto x = minX; x <= maxX; ++x)
+            for (auto y = minY; y <= maxY; ++y)
+            {
+                auto const i = m_tiles.find({x, y});
+                if (i != m_tiles.end() && ray.IntersectBoundingBox(i->second->m_bounds))
+                    tiles.push_back(i->second.get());
+            }
+    }
+    else
+    {
+        for (auto const& tile : m_tiles)
+            if (ray.IntersectBoundingBox(tile.second->m_bounds))
+                tiles.push_back(tile.second.get());
+    }
 
     return RayCast(ray, tiles, doodads);
 }

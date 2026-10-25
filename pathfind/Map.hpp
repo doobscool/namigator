@@ -164,6 +164,10 @@ public:
     // aggro, so doodads and temporary obstacles will be ignored.
     bool LineOfSight(const math::Vertex& start, const math::Vertex& stop,
                      bool doodads) const;
+    // Reference LineOfSight that tests every loaded tile's bounds (the old
+    // RayCast). Only for offline comparison (bot.exe --nav-lostest).
+    bool LineOfSightFullScan(const math::Vertex& start,
+                             const math::Vertex& stop, bool doodads) const;
 
     bool FindRandomPointAroundCircle(const math::Vertex& centerPosition,
                                      float radius,
